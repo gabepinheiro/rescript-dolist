@@ -1,6 +1,12 @@
+open Ancestor.Default
+
+open Render
+
 @react.component
 let make = () => {
-  <div className="main-container">
-    <h1> {`Hello from ReScript and Vite 😄`->React.string} </h1>
-  </div>
+  <Box bgColor=[xs(#hex("#000")), md(#hex("#cacaca"))]>
+    <Typography tag=#h2 color=[xs(#hex("#fff")), md(#hex("#000"))]>
+      {`Hello from ReScript and Vite 😄`->s}
+    </Typography>
+  </Box>
 }
