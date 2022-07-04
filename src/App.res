@@ -25,6 +25,10 @@ Emotion.injectGlobal({
 @react.component
 let make = () => {
   <Box width=[xs(100.0->#pct)] height=[xs(100.0->#pct)] bgColor=[xs(Theme.Colors.black)]>
-    <Button> {"Adicionar"} </Button> <Checkbox />
+    <Button> {"Adicionar"} </Button>
+    //
+    <Checkbox />
+    //
+    <Input placeholder="Nova tarefa" />
   </Box>
 }
