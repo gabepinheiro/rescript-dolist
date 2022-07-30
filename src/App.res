@@ -1,7 +1,5 @@
 open Ancestor.Default
 
-open Render
-
 Emotion.injectGlobal({
   "html": {
     "fontSize": "10px",
@@ -24,11 +22,13 @@ Emotion.injectGlobal({
 
 @react.component
 let make = () => {
-  <Box width=[xs(100.0->#pct)] height=[xs(100.0->#pct)] bgColor=[xs(Theme.Colors.black)]>
-    <Button> {"Adicionar"} </Button>
-    //
-    <Checkbox />
-    //
-    <Input placeholder="Nova tarefa" />
+  <Box 
+    py=[xs(4), md(9)]
+    px=[xs(4), md(9)]
+    width=[xs(100.0->#pct)] 
+    height=[xs(100.0->#pct)] 
+    bgColor=[xs(Theme.Colors.black)]
+  >
+      <Tasks />
   </Box>
 }

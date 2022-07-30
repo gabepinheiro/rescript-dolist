@@ -7,7 +7,7 @@ module Styles = {
     "color": Theme.Colors.white->colorToString,
     "fontSize": "1.8rem",
     "border": 0,
-    "padding": "1.2rem 1.6rem",
+    "padding": "1.6rem 1.6rem",
     "borderRadius": "6px",
     "outline": 0,
     "width": "100%",
