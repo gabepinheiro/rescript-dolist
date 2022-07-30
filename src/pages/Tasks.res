@@ -1,8 +1,12 @@
 open Ancestor.Default
 open Render
 
+let {useTasks} = module(TasksHook)
+
 @module("../assets/logo.svg")  external logo: string = "default"
 @module("../assets/empty-state.svg")  external emptyState: string = "default"
+
+let formatDate = value => value->Js.Date.fromString->DateFns.format("dd/MM/yy hh:mm")
 
 module EmptyState = {
     @react.component
@@ -82,7 +86,7 @@ module TaskItem = {
                     {createdAt->s}
                 </Typography>     
             </Box>
-            <Checkbox checked=completed />
+            <Checkbox checked=completed onChange={_ => ()}/>
         </Box>
     }
 }
@@ -114,6 +118,8 @@ module NewTaskInput = {
 
 @react.component
 let make = () => {
+    let result = useTasks()
+
     <Box display=[xs(#flex)] alignItems=[xs(#center)] flexDirection=[xs(#column)]>
         <Box 
             tag=#header
@@ -132,34 +138,27 @@ let make = () => {
         >
             <NewTaskInput />
 
-            <EmptyState />
-
-            <Stack 
-                mt=[xs(5)]
-                spacing=[xs(2)] 
-                direction=[xs(#horizontal)]
-            >
-                <TaskItem 
-                    name="Lorem ipsum dolor sit amet"
-                    createdAt="11/10/2021 às 19h53m"
-                    completed=true
-                />
-                 <TaskItem 
-                    name="Lorem ipsum dolor sit amet"
-                    createdAt="11/10/2021 às 19h53m"
-                    completed=true
-                />
-                 <TaskItem 
-                    name="Lorem ipsum dolor sit amet"
-                    createdAt="11/10/2021 às 19h53m"
-                    completed=true
-                />
-                 <TaskItem 
-                    name="Lorem ipsum dolor sit amet"
-                    createdAt="11/10/2021 às 19h53m"
-                    completed=true
-                />
-            </Stack>
+            {switch result { 
+                | Loading => "Loading..."->s
+                | Error => "Error"->s
+                | Data([]) => <EmptyState />
+                | Data(tasks) => 
+                    <Stack 
+                        mt=[xs(5)]
+                        spacing=[xs(2)] 
+                        direction=[xs(#horizontal)]
+                    >
+                        {tasks->map(({ name, completed, createdAt }, key) => {
+                            <TaskItem 
+                                key 
+                                name 
+                                completed 
+                                createdAt={createdAt->formatDate}
+                            />
+                        })}
+                    </Stack>
+                }
+            }
         </Box>
     </Box>
 }

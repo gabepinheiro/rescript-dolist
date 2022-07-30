@@ -60,10 +60,10 @@ module Styles = {
 }
 
 @react.component
-let make = (~checked=?, ~onChange=?) => {
+let make = (~checked=?, ~onChange=?, ~value=?) => {
   <label className=Styles.checkbox>
     //
-    <input ?checked ?onChange type_="checkbox" />
+    <input ?checked ?onChange type_="checkbox" ?value />
     <div>
       //
       <img src=checkIcon alt="Checkbox Icon" />
