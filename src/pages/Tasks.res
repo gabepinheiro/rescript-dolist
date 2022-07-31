@@ -3,9 +3,6 @@ open Render
 
 let {useTasks} = module(TasksHook)
 
-@module("../assets/logo.svg")  external logo: string = "default"
-@module("../assets/empty-state.svg")  external emptyState: string = "default"
-
 let formatDate = value => value->Js.Date.fromString->DateFns.format("dd/MM/yy hh:mm")
 
 module EmptyState = {
@@ -21,7 +18,7 @@ module EmptyState = {
             <Base 
                 tag=#img 
                 width=[xs(200->#px)] 
-                src=emptyState
+                src=Assets.emptyState
                 mb=[xs(3)]
             />
 
@@ -47,6 +44,43 @@ module EmptyState = {
                 color=[xs(Theme.Colors.grayLight)]
             >
                 {`Adicione sua primeira tarefa utilizando o campo acima`->s}
+            </Typography>
+        </Box>
+    }
+}
+
+module ErrorMessage = {
+    @react.component
+    let make = () => {
+        <Box 
+            display=[xs(#flex)] 
+            flexDirection=[xs(#column)]
+            alignItems=[xs(#center)]
+            minH=[xs(40.0->#rem)]
+            justifyContent=[xs(#center)]
+        >
+            <Typography 
+                tag=#h1
+                m=[xs(0)]
+                mb=[xs(1)]
+                fontSize=[xs(2.4->#rem)]
+                fontWeight=[xs(#bold)]
+                letterSpacing=[xs(-0.055->#em)]
+                textAlign=[xs(#center)]
+                color=[xs(Theme.Colors.white)]
+            >
+                {`Ocorreu algo inesperado`->s}
+            </Typography>
+
+            <Typography
+                m=[xs(0)]
+                tag=#p 
+                fontSize=[xs(1.8->#rem)]
+                letterSpacing=[xs(-0.03->#em)]
+                textAlign=[xs(#center)]
+                color=[xs(Theme.Colors.grayLight)]
+            >
+                {`Ocorreu um erro. Por favor, tente novamente.`->s}
             </Typography>
         </Box>
     }
@@ -91,9 +125,27 @@ module TaskItem = {
     }
 }
 
-module NewTaskInput = {
+module Spinner = {
     @react.component
     let make = () => {
+        <Box
+            minH=[xs(40.0->#rem)]
+            width=[xs(100.0->#pct)]
+            display=[xs(#flex)]
+            alignItems=[xs(#center)]
+            justifyContent=[xs(#center)]
+        >   
+            <Base 
+                tag=#img src=Assets.spinnerSvg
+                width=[xs(5.6->#rem)]
+            />
+        </Box>
+    }
+}
+
+module NewTaskInput = {
+    @react.component
+    let make = (~isLoading=false, ~onChange=?, ~onSubmit=?, ~taskName) => {
         <Box>
             <Typography
                 tag=#label
@@ -107,9 +159,19 @@ module NewTaskInput = {
                 {`Nova Tarefa`->s}
             </Typography>
             <Box mt=[xs(2)] position=[xs(#relative)]>
-                <Input placeholder="Compras da semana" />
+                <Input 
+                    value=taskName
+                    placeholder="Compras da semana"
+                    ?onChange 
+                />
                 <Box position=[xs(#absolute)] right=[xs(8->#px)] top=[xs(8->#px)]>
-                    <Button>`Adicionar`</Button>
+                    <Button 
+                        loading=isLoading
+                        disabled={taskName === "" || isLoading}
+                        onClick=?onSubmit
+                    >
+                        `Adicionar`
+                    </Button>
                 </Box>
             </Box>
         </Box>
@@ -118,7 +180,7 @@ module NewTaskInput = {
 
 @react.component
 let make = () => {
-    let result = useTasks()
+    let { result, isCreating, taskName, handleChange, handleCreateTask } = useTasks()
 
     <Box display=[xs(#flex)] alignItems=[xs(#center)] flexDirection=[xs(#column)]>
         <Box 
@@ -127,7 +189,7 @@ let make = () => {
             justifyContent=[xs(#center)]
             mb=[xs(3)]
         >
-            <img src=logo />
+            <img src=Assets.logo />
         </Box>
         <Box 
             width=[xs(100.0->#pct)] 
@@ -136,11 +198,16 @@ let make = () => {
             display=[xs(#flex)]
             flexDirection=[xs(#column)]
         >
-            <NewTaskInput />
+            <NewTaskInput 
+                onChange=handleChange
+                onSubmit=handleCreateTask
+                taskName=taskName
+                isLoading=isCreating
+            />
 
             {switch result { 
-                | Loading => "Loading..."->s
-                | Error => "Error"->s
+                | Loading => <Spinner />
+                | Error => <ErrorMessage />
                 | Data([]) => <EmptyState />
                 | Data(tasks) => 
                     <Stack 

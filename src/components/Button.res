@@ -1,3 +1,4 @@
+open Ancestor.Default
 open Render
 
 module Styles = {
@@ -5,7 +6,10 @@ module Styles = {
 
   let {toString: colorToString} = module(Theme.Colors)
 
-  let button = css({
+  let button = (~disabled) => css({
+    "display": "flex",
+    "alignItems": "center",
+    "justifyContent": "center",
     "border": 0,
     "outline": 0,
     "backgroundColor": Theme.Colors.primary->colorToString,
@@ -16,8 +20,9 @@ module Styles = {
     "fontSize": "1.6rem",
     "lineHeight": "2.1rem",
     "letterSpacing": "-0.035rem",
-    "cursor": "pointer",
+    "cursor": disabled ? "not-allowed" : "pointer",
     "transition": "300ms",
+    "opacity": disabled ? "0.5" : "1",
     "&:hover": {
       "backgroundColor": Theme.Colors.primaryDark->colorToString,
     },
@@ -25,6 +30,16 @@ module Styles = {
 }
 
 @react.component
-let make = (~children, ~onClick=?) => {
-  <button className=Styles.button ?onClick> {children->s} </button>
+let make = (~children, ~onClick=?, ~loading=false, ~disabled=false) => {
+  <button 
+    className=Styles.button(~disabled) 
+    disabled
+    ?onClick
+  > 
+
+    {switch loading {
+    | true => <Base tag=#img src=Assets.spinnerSvg width=[xs(2.4->#rem)] />
+    | false => {children->s}
+    }} 
+  </button>
 }

@@ -15,7 +15,7 @@ Emotion.injectGlobal({
   },
   "html, body, #root": {
     "width": "100%",
-    "height": "100%",
+    "min-height": "100%",
     "fontFamily": Theme.Constants.fontFamily,
   },
 })
