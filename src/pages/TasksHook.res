@@ -16,7 +16,8 @@ type hookResult = {
     result: requestResult,
     taskName: string,
     handleChange: ReactEvent.Form.t => unit,
-    handleCreateTask: ReactEvent.Mouse.t => unit
+    handleCreateTask: ReactEvent.Mouse.t => unit,
+    handleCompleteTask: TasksTypes.task => unit
 }
 
 let apiURL = "http://localhost:3001"
@@ -51,6 +52,21 @@ let createTask = (taskName) => {
     )->thenResolve(_ => ())
 }
 
+let completeTask = task => {
+    open TasksTypes
+
+    Fetch.fetch(`${apiURL}/tasks/${task.id->Js.Int.toString}`, {
+        "method": "PATCH",
+        "body": Js.Json.stringifyAny({
+            ...task,
+            completed: !task.completed
+        }),
+        "headers": {
+            "Content-Type": "application/json"
+        }
+    })
+}
+
 let useTasks = () => {
     let (taskName, setTaskName) = React.useState(_ => "")
 
@@ -64,25 +80,44 @@ let useTasks = () => {
         )
     )
 
-    let handleRefect = (_, _, _) => {
+    let refetchTasks = () => {
         result.refetch({
             throwOnError: false,
             cancelRefetch: false
         })
     }
 
+    let handleSuccess = (_, _, _) => {
+        setTaskName(_ => "")
+        refetchTasks()
+    }
+
     let { mutate: createTaskMutation, isLoading } = useMutation(
         mutationOptions(
             //
-            ~onSuccess=handleRefect,
+            ~onSuccess=handleSuccess,
             ~mutationFn=createTask,
             ~mutationKey="new-task",
             (),
         ),
     )
 
+    let { mutate: completedTaskMutation, isLoading: isCompletingTask } = useMutation(
+        mutationOptions(
+            //
+            ~onSuccess=(_, _, _) => refetchTasks(),
+            ~mutationFn=completeTask,
+            ~mutationKey="completed-task",
+            (),
+        ),
+    )
+
     let handleCreateTask = _ => {
         createTaskMutation(. taskName, None)
+    }
+
+    let handleCompleteTask = task => {
+        completedTaskMutation(. task, None)
     }
 
     let handleChange = event => {
@@ -102,6 +137,7 @@ let useTasks = () => {
         },
         taskName,
         handleChange,
-        handleCreateTask
+        handleCreateTask,
+        handleCompleteTask
     }
 }

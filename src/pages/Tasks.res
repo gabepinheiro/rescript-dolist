@@ -88,7 +88,7 @@ module ErrorMessage = {
 
 module TaskItem = {
     @react.component
-    let make = (~name, ~createdAt, ~completed) => {
+    let make = (~name, ~createdAt, ~completed, ~onCompletedTask=?) => {
         <Box 
             px=[xs(2)]
             py=[xs(2)]
@@ -120,7 +120,7 @@ module TaskItem = {
                     {createdAt->s}
                 </Typography>     
             </Box>
-            <Checkbox checked=completed onChange={_ => ()}/>
+            <Checkbox checked=completed onChange=?onCompletedTask />
         </Box>
     }
 }
@@ -180,7 +180,14 @@ module NewTaskInput = {
 
 @react.component
 let make = () => {
-    let { result, isCreating, taskName, handleChange, handleCreateTask } = useTasks()
+    let { 
+        result, 
+        isCreating, 
+        taskName, 
+        handleChange, 
+        handleCreateTask,
+        handleCompleteTask
+    } = useTasks()
 
     <Box display=[xs(#flex)] alignItems=[xs(#center)] flexDirection=[xs(#column)]>
         <Box 
@@ -215,11 +222,14 @@ let make = () => {
                         spacing=[xs(2)] 
                         direction=[xs(#horizontal)]
                     >
-                        {tasks->map(({ name, completed, createdAt }, key) => {
+                        {tasks->map((task, key) => {
+                            let { name, completed, createdAt } = task
+
                             <TaskItem 
                                 key 
                                 name 
                                 completed 
+                                onCompletedTask={_ => handleCompleteTask(task)}
                                 createdAt={createdAt->formatDate}
                             />
                         })}

@@ -3,7 +3,7 @@
     {
       "id": 1,
       "name": "Compras da semana",
-      "completed": false,
+      "completed": true,
       "createdAt": "2021-10-23T16:52:45.875Z"
     },
     {
@@ -15,7 +15,7 @@
     {
       "id": 3,
       "name": "Compras da semana",
-      "completed": true,
+      "completed": false,
       "createdAt": "2021-10-23T16:52:45.875Z"
     },
     {
@@ -38,7 +38,7 @@
     },
     {
       "name": "Compras do mês",
-      "completed": false,
+      "completed": true,
       "createdAt": "2022-07-31T15:49:13.619Z",
       "id": 7
     },
@@ -50,7 +50,7 @@
     },
     {
       "name": "asdasda",
-      "completed": false,
+      "completed": true,
       "createdAt": "2022-07-31T15:51:33.279Z",
       "id": 9
     }
